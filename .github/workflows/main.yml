@@ -124,7 +124,7 @@ jobs:
         run: |
           echo '=====开始上传镜像====='
           echo '=====开始上传mogu_admin====='
-          docker push registry.cn-shenzhen.aliyuncs.com/potatoblog/mogu_admin
+          docker push registry.cn-shenzhen.aliyuncs.com/potatoblog/potatoblog/mogu_admin
 
           echo '=====开始上传mogu_gateway====='
           docker push registry.cn-shenzhen.aliyuncs.com/potatoblog/mogu_gateway
