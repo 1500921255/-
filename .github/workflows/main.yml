@@ -9,7 +9,7 @@ name: Master-Build-Docker-Images
 on:
   push:
     branches:
-      - Nacos
+      - master
 
 jobs:
   push:
