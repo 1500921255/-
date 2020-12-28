@@ -3,7 +3,7 @@ name: mogu_master CI/CD/master
 on: 
   push:
     branches: 
-      - maste
+      - master
 
 jobs:
   build:
