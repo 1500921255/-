@@ -20,13 +20,23 @@
       </div>
       <div class="pay_explain">扫码打赏，你说多少就多少</div>
       <div class="shang_payselect">
-        <div class="pay_item" :class="[this.payMethod==1?'checked':'']" data-id="alipay" @click="choosePay('1')">
+        <div
+          class="pay_item"
+          :class="[this.payMethod==1?'checked':'']"
+          data-id="alipay"
+          @click="choosePay('1')"
+        >
           <span class="radiobox"></span>
           <span class="pay_logo">
             <img src="../../../static/images/alipay.jpg" alt="支付宝">
           </span>
         </div>
-        <div class="pay_item" :class="[this.payMethod==2?'checked':'']" data-id="weipay" @click="choosePay('2')">
+        <div
+          class="pay_item"
+          :class="[this.payMethod==2?'checked':'']"
+          data-id="weipay"
+          @click="choosePay('2')"
+        >
           <span class="radiobox"></span>
           <span class="pay_logo">
             <img src="../../../static/images/wechat.jpg" alt="微信">
@@ -34,7 +44,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -44,7 +53,7 @@ import {
   praiseBlogByUid,
   getBlogPraiseCountByUid
 } from "../../api/blogContent";
-import { mapMutations } from "vuex";
+import {mapMutations} from "vuex";
 export default {
   name: "PayCode",
   props: {
@@ -56,7 +65,7 @@ export default {
       type: String
     }
   },
-  data () {
+  data() {
     return {
       webConfigData: [],
       showPay: false, //是否显示支付
@@ -64,7 +73,7 @@ export default {
       payCode: "", //支付码图片
     };
   },
-  created () {
+  created() {
     getWebConfig().then(response => {
       console.log("从接口中获取")
       if (response.code == this.$ECode.SUCCESS) {
@@ -76,11 +85,11 @@ export default {
   methods: {
     //拿到vuex中的写的方法
     ...mapMutations(['setLoginMessage']),
-    dashangToggle: function () {
+    dashangToggle: function() {
       this.showPay = !this.showPay;
     },
     // 支付方式
-    choosePay: function (type) {
+    choosePay: function(type) {
       this.payMethod = type;
       if (type == 1) {
         this.payCode = this.webConfigData.aliPayPhoto;
@@ -89,10 +98,10 @@ export default {
       }
     },
     //博客点赞
-    praiseBlog: function (uid) {
+    praiseBlog: function(uid) {
       // 判断用户是否登录
       let isLogin = this.$store.state.user.isLogin
-      if (!isLogin) {
+      if(!isLogin) {
         this.$notify.error({
           title: '警告',
           message: '登录后才可以评论哦~',
@@ -124,7 +133,7 @@ export default {
       });
     },
     //获取点赞数
-    getPraiseCount: function (uid) {
+    getPraiseCount: function(uid) {
       var params = new URLSearchParams();
       params.append("uid", uid);
       getBlogPraiseCountByUid(params).then(response => {
@@ -138,7 +147,7 @@ export default {
 </script>
 
 <style>
-.diggit {
-  cursor: pointer;
-}
+  .diggit {
+    cursor: pointer;
+  }
 </style>

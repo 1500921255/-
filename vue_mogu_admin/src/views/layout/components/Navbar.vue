@@ -1,11 +1,19 @@
 <template>
   <div class="dashboard-editor-container">
     <el-menu class="navbar" mode="horizontal">
-      <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container" />
+      <hamburger
+        :toggle-click="toggleSideBar"
+        :is-active="sidebar.opened"
+        class="hamburger-container"
+      />
 
-      <breadcrumb />
+      <breadcrumb/>
 
       <div class="right-menu">
+
+        <el-tooltip content="门户页面" effect="dark" placement="bottom">
+          <Website id="website" class="right-menu-item" />
+        </el-tooltip>
 
         <el-tooltip content="Gitee源码" effect="dark" placement="bottom">
           <MoGuGit id="mogu-git" class="right-menu-item" />
@@ -26,7 +34,7 @@
         <el-dropdown class="avatar-container" trigger="click">
           <div class="avatar-wrapper">
             <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-            <i class="el-icon-caret-bottom" />
+            <i class="el-icon-caret-bottom"/>
           </div>
           <el-dropdown-menu slot="dropdown" class="user-dropdown">
             <el-dropdown-item>
@@ -71,6 +79,7 @@ import Screenfull from "@/components/Screenfull";
 import ThemePicker from "@/components/ThemePicker";
 import MoGuGit from '@/components/MoGu/Git'
 import MoGuDoc from '@/components/MoGu/Doc'
+import Website from '@/components/MoGu/Website'
 
 export default {
   components: {
@@ -79,9 +88,10 @@ export default {
     Hamburger,
     ThemePicker,
     MoGuGit,
-    MoGuDoc
+    MoGuDoc,
+    Website
   },
-  data () {
+  data() {
     return {
       dialogFormVisible: false,
       title: "更新日志",
@@ -92,21 +102,21 @@ export default {
     ...mapGetters(["sidebar", "avatar"])
   },
   methods: {
-    toggleSideBar () {
+    toggleSideBar() {
       this.$store.dispatch("ToggleSideBar");
     },
-    logout () {
+    logout() {
       this.$store.dispatch("LogOut").then(() => {
         // 为了重新实例化vue-router对象 避免bug
         location.reload();
       });
     },
-    showLog: function () {
+    showLog: function() {
       console.log("点击了显示日志");
       this.dialogFormVisible = true;
     },
     aboutMe: function () {
-      this.$router.push({ path: '/system/aboutMe' })
+      this.$router.push({path:'/system/aboutMe'})
     }
   }
 };

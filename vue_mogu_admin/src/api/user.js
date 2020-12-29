@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getUserList (params) {
+export function getUserList(params) {
   return request({
     url: process.env.ADMIN_API + '/user/getList',
     method: 'post',
@@ -8,7 +8,7 @@ export function getUserList (params) {
   })
 }
 
-export function addUser (params) {
+export function addUser(params) {
   return request({
     url: process.env.ADMIN_API + '/user/add',
     method: 'post',
@@ -17,8 +17,7 @@ export function addUser (params) {
 }
 
 
-export function editUser (params) {
-  console.log(params)
+export function editUser(params) {
   return request({
     url: process.env.ADMIN_API + '/user/edit',
     method: 'post',
@@ -26,7 +25,7 @@ export function editUser (params) {
   })
 }
 
-export function deleteUser (params) {
+export function deleteUser(params) {
   return request({
     url: process.env.ADMIN_API + '/user/delete',
     method: 'post',
@@ -34,7 +33,7 @@ export function deleteUser (params) {
   })
 }
 
-export function resetUserPassword (params) {
+export function resetUserPassword(params) {
   return request({
     url: process.env.ADMIN_API + '/user/resetUserPassword',
     method: 'post',

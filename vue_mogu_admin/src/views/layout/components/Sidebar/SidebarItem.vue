@@ -8,10 +8,10 @@
         </template>
 
         <template v-for="child in item.sonItem" v-if="hasOneShowingChildren(child)">
-          <el-menu-item :index="child.url" :key="child.name" @click="goTo(child)">
-            <i v-if="child.icon" :class="child.icon"></i>
-            <span v-if="child.name" slot="title">{{child.name}}</span>
-          </el-menu-item>
+            <el-menu-item :index="child.url" :key="child.name" @click="goTo(child)">
+              <i v-if="child.icon" :class="child.icon"></i>
+              <span v-if="child.name" slot="title">{{child.name}}</span>
+            </el-menu-item>
         </template>
       </el-submenu>
 
@@ -28,32 +28,32 @@ export default {
     routes: {
       type: Array
     },
-    items: {
-      type: Array
+    items:{
+      type:Array
     },
     isNest: {
       type: Boolean,
       default: false
     }
   },
-  data () {
+  data() {
     return {
       isShow: false
     }
   },
   methods: {
-    goTo: function (child) {
-      if (child.isJumpExternalUrl == 1) {
+    goTo: function(child) {
+      if(child.isJumpExternalUrl == 1) {
         window.open(child.url)
       } else {
-        this.$router.push({ path: child.url })
+        this.$router.push({path: child.url})
       }
     },
-    hasOneShowingChildren (children) {
+    hasOneShowingChildren(children) {
       return (children.isShow == 1)
     },
     // 检测父菜单是否隐藏
-    checkShowOrHidden (item) {
+    checkShowOrHidden(item) {
       return (item.parent.isShow == 1)
     }
   }

@@ -350,34 +350,10 @@ export const constantRouterMap = [
         meta: { title: '在线用户', icon: 'log' }
       },
       {
-        path: 'SpringBootAdmin',
-        name: 'SpringBootAdmin',
-        component: () => import('@/views/monitor/SpringBootAdmin'),
-        meta: { title: 'SpringBootAdmin', icon: 'log' }
-      },
-      {
-        path: 'Zipkin',
-        name: 'Zipkin',
-        component: () => import('@/views/monitor/Zipkin'),
-        meta: { title: 'Zipkin链路追踪', icon: 'log' }
-      },
-      {
-        path: 'Druid',
-        name: 'Druid',
-        component: () => import('@/views/monitor/Druid'),
-        meta: { title: 'Druid', icon: 'exception' }
-      },
-      {
-        path: 'Eureka',
-        name: 'Eureka',
-        component: () => import('@/views/monitor/Eureka'),
-        meta: { title: 'Eureka', icon: 'user1' }
-      },
-      {
-        path: 'RabbitMQ',
-        name: 'RabbitMQ',
-        component: () => import('@/views/monitor/RabbitMQ'),
-        meta: { title: 'RabbitMQ', icon: 'user1' }
+        path: 'ServerMonitor',
+        name: '服务器监控',
+        component: () => import('@/views/monitor/ServerMonitor'),
+        meta: { title: '服务器监控', icon: 'exception' }
       },
       {
         path: 'Solr',
@@ -390,12 +366,6 @@ export const constantRouterMap = [
         name: 'ElasticSearch',
         component: () => import('@/views/monitor/ElasticSearch'),
         meta: { title: 'ElasticSearch', icon: 'exception' }
-      },
-      {
-        path: 'ServerMonitor',
-        name: '服务器监控',
-        component: () => import('@/views/monitor/ServerMonitor'),
-        meta: { title: '服务器监控', icon: 'exception' }
       },
     ]
   },

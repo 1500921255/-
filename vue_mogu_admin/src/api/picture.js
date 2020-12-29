@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getPictureList (params) {
+export function getPictureList(params) {
   return request({
     url: process.env.ADMIN_API + '/picture/getList',
     method: 'post',
@@ -8,7 +8,7 @@ export function getPictureList (params) {
   })
 }
 
-export function addPicture (params) {
+export function addPicture(params) {
   return request({
     url: process.env.ADMIN_API + '/picture/add',
     method: 'post',
@@ -16,7 +16,7 @@ export function addPicture (params) {
   })
 }
 
-export function editPicture (params) {
+export function editPicture(params) {
   return request({
     url: process.env.ADMIN_API + '/picture/edit',
     method: 'post',
@@ -24,7 +24,7 @@ export function editPicture (params) {
   })
 }
 
-export function deletePicture (params) {
+export function deletePicture(params) {
   return request({
     url: process.env.ADMIN_API + '/picture/delete',
     method: 'post',
@@ -32,7 +32,7 @@ export function deletePicture (params) {
   })
 }
 
-export function setCover (params) {
+export function setCover(params) {
   return request({
     url: process.env.ADMIN_API + '/picture/setCover',
     method: 'post',
