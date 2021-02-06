@@ -5,12 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>蘑菇博客后台管理系统</title>
-  <script id='env'><%= htmlWebpackPlugin.options.env %></script>
+  <!-- <script id='env'><%= htmlWebpackPlugin.options.env %></script> -->
 
   <style>
     *::-webkit-scrollbar {
       /*滚动条整体样式*/
-      width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+      width: 8px;
+      /*高宽分别对应横竖滚动条的尺寸*/
       height: 1px;
     }
 
@@ -22,7 +23,7 @@
       /*滚动条里面小方块--变化色*/
       border-radius: 8px;
       background-color: #acc0ca;
-      background-image: -webkit-linear-gradient( 45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent );
+      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
     }
 
     *::-webkit-scrollbar-track {
@@ -39,6 +40,7 @@
       margin: 0px;
       padding: 0px;
     }
+
     .chromeframe {
       margin: 0.2em 0;
       background: #ccc;
@@ -115,6 +117,7 @@
         -ms-transform: rotate(0deg);
         transform: rotate(0deg);
       }
+
       100% {
         -webkit-transform: rotate(360deg);
         -ms-transform: rotate(360deg);
@@ -128,6 +131,7 @@
         -ms-transform: rotate(0deg);
         transform: rotate(0deg);
       }
+
       100% {
         -webkit-transform: rotate(360deg);
         -ms-transform: rotate(360deg);
@@ -225,9 +229,9 @@
   <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
 
   <!-- 引入 CKeditor-->
-<!--  <script src='static/ckeditor/ckeditor.js' type="text/javascript"></script>-->
+  <!--  <script src='static/ckeditor/ckeditor.js' type="text/javascript"></script>-->
   <script src="https://cdn.bootcdn.net/ajax/libs/ckeditor/4.15.1/ckeditor.js"></script>
-<!--  <script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>-->
+  <!--  <script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>-->
 
   <!--引入showdown, markdown-html转换组件的CDN加速-->
   <!--github: https://github.com/showdownjs/showdown -->
@@ -252,4 +256,5 @@
     </div>
   </div>
 </body>
+
 </html>
