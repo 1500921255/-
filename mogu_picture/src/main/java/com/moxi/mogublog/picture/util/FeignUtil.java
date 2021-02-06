@@ -90,7 +90,7 @@ public class FeignUtil {
         String platform = request.getParameter(SysConf.PLATFORM);
         Map<String, String> systemConfigMap = new HashMap<>();
         // 判断是否是web端发送过来的请求【后端发送过来的token长度为32】
-        if (SysConf.WEB.equals(platform) || (paramsToken != null && paramsToken.length() == Constants.THIRTY_TWO )) {
+        if (SysConf.WEB.equals(platform) || (paramsToken != null && paramsToken.length() == Constants.THIRTY_TWO)) {
             // 如果是调用web端获取配置的接口
             systemConfigMap = this.getSystemConfigByWebToken(paramsToken);
         } else {
@@ -108,7 +108,6 @@ public class FeignUtil {
             log.error(MessageConf.PLEASE_SET_QI_NIU);
             throw new QueryException(ErrorCode.PLEASE_SET_QI_NIU, MessageConf.PLEASE_SET_QI_NIU);
         }
-
 
         SystemConfig systemConfig = new SystemConfig();
         if (systemConfigMap == null) {
@@ -251,6 +250,7 @@ public class FeignUtil {
             String qiNiuBucket = systemConfigMap.get(SysConf.QI_NIU_BUCKET);
             String qiNiuArea = systemConfigMap.get(SysConf.QI_NIU_AREA);
             String picturePriority = systemConfigMap.get(SysConf.PICTURE_PRIORITY);
+            String contentPicturePriority = systemConfigMap.get(SysConf.CONTENT_PICTURE_PRIORITY);
 
             String minioEndPoint = systemConfigMap.get(SysConf.MINIO_END_POINT);
             String minioAccessKey = systemConfigMap.get(SysConf.MINIO_ACCESS_KEY);
@@ -281,6 +281,7 @@ public class FeignUtil {
             systemConfig.setUploadQiNiu(uploadQiNiu);
             systemConfig.setUploadLocal(uploadLocal);
             systemConfig.setPicturePriority(picturePriority);
+            systemConfig.setContentPicturePriority(contentPicturePriority);
             systemConfig.setLocalPictureBaseUrl(localPictureBaseUrl);
             systemConfig.setQiNiuPictureBaseUrl(qiNiuPictureBaseUrl);
 

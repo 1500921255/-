@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 收藏表 RestApi
  *
- * @author 杨明宇
- * @date 2020-11-30
+ * @author 陌溪
+ * @date 2018-09-08
  */
 @RestController
 @RequestMapping("/collect")

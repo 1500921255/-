@@ -34,9 +34,9 @@ public class FileRestApi {
     @Autowired
     MinioUtil minioUtil;
     @Autowired
-    private FileService fileService;
-    @Autowired
     private FeignUtil feignUtil;
+    @Autowired
+    private FileService fileService;
 
     @ApiOperation(value = "截图上传", notes = "截图上传")
     @RequestMapping(value = "/cropperPicture", method = RequestMethod.POST)
@@ -86,7 +86,7 @@ public class FileRestApi {
     }
 
     /**
-     * 通过URL将图片上传到自己服务器中【用于Github和Gitee的头像上传】
+     * 通过URL将图片上传到自己服务器中【主要用于Github和Gitee的头像上传】
      *
      * @param fileVO
      * @param result
@@ -104,7 +104,7 @@ public class FileRestApi {
      *
      * @return
      */
-    @ApiOperation(value = "图像中的图片上传", notes = "图像中的图片上传")
+    @ApiOperation(value = "Ckeditor图像中的图片上传", notes = "Ckeditor图像中的图片上传")
     @RequestMapping(value = "/ckeditorUploadFile", method = RequestMethod.POST)
     public Object ckeditorUploadFile(HttpServletRequest request) {
         return fileService.ckeditorUploadFile(request);
@@ -131,6 +131,5 @@ public class FileRestApi {
     public Object ckeditorUploadToolFile(HttpServletRequest request) {
         return fileService.ckeditorUploadToolFile(request);
     }
-
 }
 

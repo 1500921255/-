@@ -1,6 +1,7 @@
 import { Message } from 'element-ui'
 // import {showdown} from 'showdown'
 // import {TurndownService} from 'turndown'
+import showdownKatex from 'showdown-katex'
 
 /** **********************************************************/
 /**
@@ -11,6 +12,13 @@ const ECode = {
   SUCCESS: "success",
   // 默认页码
   ERROR: "error",
+}
+
+/**
+ * 全局配置文件
+ */
+const SysConf = {
+  defaultAvatar: "https://gitee.com/moxi159753/wx_picture/raw/master/picture/favicon.png", // 默认头像
 }
 
 /** **********************************************************/
@@ -75,9 +83,21 @@ const FUNCTIONS = {
    * @param text
    */
   markdownToHtml: text => {
-    let converter = new showdown.Converter({tables: true});
+    let converter = new showdown.Converter({
+      tables: true,
+      extensions: [
+        showdownKatex({
+          // maybe you want katex to throwOnError
+          throwOnError: true,
+          // disable displayMode
+          displayMode: false,
+          // change errorColor to blue
+          errorColor: '#1500ff',
+        }),
+      ],
+    });
     let html = converter.makeHtml(text)
-    return converter.makeHtml(text);
+    return html;
   },
   /**
    * 将Html转成Markdown
@@ -105,12 +125,25 @@ const FUNCTIONS = {
       }
     })
 
+    // 提取数学公式进行转换
+    turndownService.addRule('multiplemath', {
+      filter (node, options) {
+        return node.classList.contains('vditor-math')
+      },
+      replacement (content, node, options) {
+        console.log("中间内容", node.firstChild.textContent)
+        return `$$ \n${node.firstChild.textContent}\n $$`
+      }
+    })
+
     var turndownPluginGfm = require('turndown-plugin-gfm')
     var gfm = turndownPluginGfm.gfm
     var tables = turndownPluginGfm.tables
     var strikethrough = turndownPluginGfm.strikethrough
     turndownService.use(gfm)
     turndownService.use([tables, strikethrough])
+
+    console.log("转换后", turndownService.turndown(text))
     return turndownService.turndown(text)
   },
   /**
@@ -175,5 +208,6 @@ const FUNCTIONS = {
 
 export default {
   ECode,
+  SysConf,
   FUNCTIONS
 }

@@ -12,8 +12,12 @@ import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
-import java.util.Date;
-
+/**
+ * 博客传输管道
+ *
+ * @author 陌溪
+ * @date 2021年1月8日16:40:07
+ */
 @Component
 public class BlogPipeline implements Pipeline {
 

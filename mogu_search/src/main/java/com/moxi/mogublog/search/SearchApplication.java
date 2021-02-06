@@ -2,28 +2,27 @@ package com.moxi.mogublog.search;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
  * @author 陌溪
  * @date 2020年1月10日21:08:23
  */
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, RedisAutoConfiguration.class,
+        RedisRepositoriesAutoConfiguration.class})
 @EnableOpenApi
 @EnableDiscoveryClient
 @EnableFeignClients("com.moxi.mogublog.commons.feign")
 @ComponentScan(basePackages = {
         "com.moxi.mogublog.commons.config.feign",
         "com.moxi.mogublog.commons.handler",
-        "com.moxi.mogublog.utils",
+//        "com.moxi.mogublog.utils",
         "com.moxi.mogublog.search"
 })
 public class SearchApplication {
@@ -36,26 +35,5 @@ public class SearchApplication {
         System.setProperty("es.set.netty.runtime.available.processors", "false");
 
         SpringApplication.run(SearchApplication.class, args);
-
-    }
-
-    private CorsConfiguration buildConfig() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        return corsConfiguration;
-    }
-
-    /**
-     * 跨域过滤器
-     *
-     * @return
-     */
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", buildConfig());
-        return new CorsFilter(source);
     }
 }

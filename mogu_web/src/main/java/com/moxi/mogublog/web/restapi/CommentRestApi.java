@@ -15,8 +15,8 @@ import com.moxi.mogublog.web.global.RedisConf;
 import com.moxi.mogublog.web.global.SQLConf;
 import com.moxi.mogublog.web.global.SysConf;
 import com.moxi.mogublog.web.log.BussinessLog;
-import com.moxi.mogublog.web.utils.RabbitMqUtil;
 import com.moxi.mogublog.xo.service.*;
+import com.moxi.mogublog.xo.utils.RabbitMqUtil;
 import com.moxi.mogublog.xo.utils.WebUtil;
 import com.moxi.mogublog.xo.vo.CommentVO;
 import com.moxi.mogublog.xo.vo.UserVO;
@@ -33,7 +33,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -497,7 +496,7 @@ public class CommentRestApi {
         if (SysConf.CAN_NOT_COMMENT.equals(webConfig.getOpenComment())) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.NO_COMMENTS_OPEN);
         }
-        // 判断博客是否开启评论功能
+        // 判断该博客是否开启评论功能
         if (StringUtils.isNotEmpty(commentVO.getBlogUid())) {
             Blog blog = blogService.getById(commentVO.getBlogUid());
             if (SysConf.CAN_NOT_COMMENT.equals(blog.getOpenComment())) {
@@ -522,8 +521,9 @@ public class CommentRestApi {
                 return ResultUtil.result(SysConf.ERROR, MessageConf.PLEASE_TRY_AGAIN_IN_AN_HOUR);
             }
         }
-        String content = commentVO.getContent();
+
         // 判断是否垃圾评论
+        String content = commentVO.getContent();
         if (StringUtils.isCommentSpam(content)) {
             if (StringUtils.isEmpty(jsonResult)) {
                 Integer count = 0;
@@ -540,7 +540,6 @@ public class CommentRestApi {
             if (toUser.getStartEmailNotification() == SysConf.ONE) {
                 Comment toComment = commentService.getById(commentVO.getToUid());
                 if (toComment != null && StringUtils.isNotEmpty(toComment.getContent())) {
-                    System.out.println("222");
                     Map<String, String> map = new HashMap<>();
                     map.put(SysConf.EMAIL, toUser.getEmail());
                     map.put(SysConf.TEXT, commentVO.getContent());
@@ -548,7 +547,6 @@ public class CommentRestApi {
                     map.put(SysConf.NICKNAME, user.getNickName());
                     map.put(SysConf.TO_NICKNAME, toUser.getNickName());
                     map.put(SysConf.USER_UID, toUser.getUid());
-
                     // 获取评论跳转的链接
                     String commentSource = toComment.getSource();
                     String url = new String();
@@ -593,13 +591,15 @@ public class CommentRestApi {
                 comment.setFirstCommentUid(toComment.getUid());
             }
         } else {
-            // 当该评论是一级评论的时候，说明是对博客详情、留言板、关于我
+            // 当该评论是一级评论的时候，说明是对 博客详情、留言板、关于我
             // 判断是否开启邮件通知
-            SystemConfig    systemConfig = systemConfigService.getConfig();
+            SystemConfig systemConfig = systemConfigService.getConfig();
             if (systemConfig != null && EOpenStatus.OPEN.equals(systemConfig.getStartEmailNotification())) {
                 if (StringUtils.isNotEmpty(systemConfig.getEmail())) {
                     log.info("发送评论邮件通知");
-                    String commentContent = "网站收到新的评论: " + commentVO.getContent();
+                    String sourceName = ECommentSource.valueOf(commentVO.getSource()).getName();
+                    String linkText = "<a href=\" " + getUrlByCommentSource(commentVO) + "\">" + sourceName + "</a>\n";
+                    String commentContent = linkText + "收到新的评论: " + commentVO.getContent();
                     rabbitMqUtil.sendSimpleEmail(systemConfig.getEmail(), commentContent);
                 } else {
                     log.error("网站没有配置通知接收的邮箱地址！");
@@ -691,7 +691,7 @@ public class CommentRestApi {
 
         // 判断删除的是一级评论还是子评论
         String firstCommentUid = "";
-        if(StringUtils.isNotEmpty(comment.getFirstCommentUid())) {
+        if (StringUtils.isNotEmpty(comment.getFirstCommentUid())) {
             // 删除的是子评论
             firstCommentUid = comment.getFirstCommentUid();
         } else {
@@ -707,7 +707,7 @@ public class CommentRestApi {
         List<Comment> resultList = new ArrayList<>();
         this.getToCommentList(comment, toCommentList, resultList);
         // 将所有的子评论也删除
-        if(resultList.size() > 0) {
+        if (resultList.size() > 0) {
             resultList.forEach(item -> {
                 item.setStatus(EStatus.DISABLED);
                 item.setUpdateTime(new Date());
@@ -768,9 +768,10 @@ public class CommentRestApi {
 
     /**
      * 获取某条评论下的所有子评论
+     *
      * @return
      */
-    private void getToCommentList(Comment comment, List<Comment> commentList, List<Comment> resultList){
+    private void getToCommentList(Comment comment, List<Comment> commentList, List<Comment> resultList) {
         if (comment == null) {
             return;
         }
@@ -782,6 +783,35 @@ public class CommentRestApi {
                 getToCommentList(item, commentList, resultList);
             }
         }
+    }
+
+    /**
+     * 通过评论类型跳转到对应的页面
+     * @param commentVO
+     * @return
+     */
+    private String getUrlByCommentSource(CommentVO commentVO) {
+        String linkUrl = new String();
+        String commentSource = commentVO.getSource();
+        switch (commentSource) {
+            case "ABOUT": {
+                linkUrl = dataWebsiteUrl + "about";
+            }
+            break;
+            case "BLOG_INFO": {
+                linkUrl = dataWebsiteUrl + "info?blogUid=" + commentVO.getBlogUid();
+            }
+            break;
+            case "MESSAGE_BOARD": {
+                linkUrl = dataWebsiteUrl + "messageBoard";
+            }
+            break;
+            default: {
+                linkUrl = dataWebsiteUrl;
+                log.error("跳转到其它链接");
+            }
+        }
+        return linkUrl;
     }
 
 }

@@ -254,8 +254,16 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
 
     @Override
     public String uploadPictureByUrl(FileVO fileVO) {
-        Map<String, String> resultMap = fileVO.getSystemConfig();
-        SystemConfig systemConfig = feignUtil.getSystemConfigByMap(resultMap);
+        // 获取配置文件
+        SystemConfig systemConfig;
+        if (fileVO.getSystemConfig() != null) {
+            Map<String, String> resultMap = fileVO.getSystemConfig();
+            systemConfig = feignUtil.getSystemConfigByMap(resultMap);
+        } else {
+            // 从Redis中获取七牛云配置文件
+            systemConfig = feignUtil.getSystemConfig();
+        }
+
         String userUid = fileVO.getUserUid();
         String adminUid = fileVO.getAdminUid();
         String projectName = fileVO.getProjectName();
@@ -381,12 +389,12 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
                         String fileName = picture.get(SysConf.PIC_NAME).toString();
                         map.put(SysConf.UPLOADED, 1);
                         map.put(SysConf.FILE_NAME, fileName);
-                        // 设置显示方式
-                        if (EFilePriority.QI_NIU.equals(systemConfig.getPicturePriority())) {
+                        // 设置博客详情显示方式
+                        if (EFilePriority.QI_NIU.equals(systemConfig.getContentPicturePriority())) {
                             String qiNiuPictureBaseUrl = systemConfig.getQiNiuPictureBaseUrl();
                             String qiNiuUrl = picture.get(SysConf.QI_NIU_URL).toString();
                             map.put(SysConf.URL, qiNiuPictureBaseUrl + qiNiuUrl);
-                        } else if (EFilePriority.MINIO.equals(systemConfig.getPicturePriority())) {
+                        } else if (EFilePriority.MINIO.equals(systemConfig.getContentPicturePriority())) {
                             String minioPictureBaseUrl = systemConfig.getMinioPictureBaseUrl();
                             String url = minioPictureBaseUrl + picture.get(SysConf.MINIO_URL).toString();
                             map.put(SysConf.URL, url);
@@ -430,7 +438,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         String itemUrl = params[1];
 
         // 判断需要上传的域名和本机图片域名是否一致
-        if (EFilePriority.QI_NIU.equals(systemConfig.getPicturePriority())) {
+        if (EFilePriority.QI_NIU.equals(systemConfig.getContentPicturePriority())) {
             // 判断需要上传的域名和本机图片域名是否一致，如果一致，那么就不需要重新上传，而是直接返回
             if (StringUtils.isNotEmpty(systemConfig.getQiNiuPictureBaseUrl()) && StringUtils.isNotEmpty(itemUrl) && itemUrl.indexOf(systemConfig.getQiNiuPictureBaseUrl()) > -1) {
                 Map<String, Object> result = new HashMap<>();
@@ -439,7 +447,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
                 result.put(SysConf.URL, itemUrl);
                 return result;
             }
-        } else if (EFilePriority.MINIO.equals(systemConfig.getPicturePriority())) {
+        } else if (EFilePriority.MINIO.equals(systemConfig.getContentPicturePriority())) {
             // 表示优先显示Minio对象存储
             // 判断需要上传的域名和本机图片域名是否一致，如果一致，那么就不需要重新上传，而是直接返回
             if (StringUtils.isNotEmpty(systemConfig.getMinioPictureBaseUrl()) && StringUtils.isNotEmpty(itemUrl) && itemUrl.indexOf(systemConfig.getMinioPictureBaseUrl()) > -1) {
@@ -521,7 +529,7 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
         file.setFileSortUid(fileSort.getUid());
         file.setFileOldName(itemUrl);
         file.setFileSize(0L);
-        file.setPicExpandedName(SysConf.JPG);
+        file.setPicExpandedName(Constants.FILE_SUFFIX_JPG);
         file.setPicName(newFileName);
         // 设置本地图片
         file.setPicUrl(systemConfig.getLocalPictureBaseUrl() + localUrl);
@@ -605,11 +613,11 @@ public class FileServiceImpl extends SuperServiceImpl<FileMapper, File> implemen
                         map.put(SysConf.UPLOADED, 1);
                         map.put(SysConf.FILE_NAME, fileName);
                         // 设置显示方式
-                        if (EFilePriority.QI_NIU.equals(systemConfig.getPicturePriority())) {
+                        if (EFilePriority.QI_NIU.equals(systemConfig.getContentPicturePriority())) {
                             String qiNiuPictureBaseUrl = systemConfig.getQiNiuPictureBaseUrl();
                             String qiNiuUrl = qiNiuPictureBaseUrl + picture.get(SysConf.QI_NIU_URL).toString();
                             map.put(SysConf.URL, qiNiuUrl);
-                        } else if (EFilePriority.MINIO.equals(systemConfig.getPicturePriority())) {
+                        } else if (EFilePriority.MINIO.equals(systemConfig.getContentPicturePriority())) {
                             String minioPictureBaseUrl = systemConfig.getMinioPictureBaseUrl();
                             // 设置图片服务根域名
                             String url = minioPictureBaseUrl + picture.get(SysConf.MINIO_URL).toString();

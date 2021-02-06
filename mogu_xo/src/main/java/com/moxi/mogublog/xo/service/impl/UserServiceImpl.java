@@ -237,7 +237,6 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         user.setAvatar(userVO.getAvatar());
         user.setNickName(userVO.getNickName());
         user.setUserTag(userVO.getUserTag());
-        user.setStatus(userVO.getStatus());
         user.setCommentStatus(userVO.getCommentStatus());
         user.setUpdateTime(new Date());
         user.updateById();

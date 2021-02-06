@@ -18,6 +18,7 @@ import com.moxi.mogublog.utils.upload.FileUtil;
 import com.moxi.mougblog.base.enums.EFilePriority;
 import com.moxi.mougblog.base.enums.EOpenStatus;
 import com.moxi.mougblog.base.enums.EStatus;
+import com.moxi.mougblog.base.exception.exceptionType.UpdateException;
 import com.moxi.mougblog.base.serviceImpl.SuperServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +111,7 @@ public class NetworkDiskServiceImpl extends SuperServiceImpl<NetworkDiskMapper, 
         list.forEach(item -> {
             if (EFilePriority.QI_NIU.equals(picturePriority)) {
                 item.setFileUrl(qiNiuResultMap.get(SysConf.QI_NIU_PICTURE_BASE_URL) + item.getQiNiuUrl());
-            } else if (EFilePriority.MINIO.equals(picturePriority)){
+            } else if (EFilePriority.MINIO.equals(picturePriority)) {
                 item.setFileUrl(qiNiuResultMap.get(SysConf.MINIO_PICTURE_BASE_URL) + item.getMinioUrl());
             } else {
                 item.setFileUrl(qiNiuResultMap.get(SysConf.LOCAL_PICTURE_BASE_URL) + item.getLocalUrl());
@@ -208,10 +209,10 @@ public class NetworkDiskServiceImpl extends SuperServiceImpl<NetworkDiskMapper, 
             // 删除Minio中的文件
             if (EOpenStatus.OPEN.equals(uploadMinio)) {
                 String minioUrl = networkDisk.getMinioUrl();
-                if(StringUtils.isNotEmpty(minioUrl)) {
-                    String [] minUrlArray = minioUrl.split("/");
+                if (StringUtils.isNotEmpty(minioUrl)) {
+                    String[] minUrlArray = minioUrl.split("/");
                     // 找到文件名
-                    minioUtil.deleteFile(minUrlArray[minUrlArray.length-1]);
+                    minioUtil.deleteFile(minUrlArray[minUrlArray.length - 1]);
                 } else {
                     log.error("删除的文件不存在Minio文件地址");
                 }
@@ -244,6 +245,11 @@ public class NetworkDiskServiceImpl extends SuperServiceImpl<NetworkDiskMapper, 
 
         if ("null".equals(networkDiskVO.getExtendName())) {
             extendName = null;
+        }
+        // 判断移动的路径是否相同【拼接出原始目录】
+        String fileOldPath = oldFilePath + fileOldName + "/";
+        if (fileOldPath.equals(newFilePath)) {
+            throw new UpdateException("不能选择自己");
         }
         //移动根目录
         QueryWrapper<NetworkDisk> queryWrapper = new QueryWrapper<>();

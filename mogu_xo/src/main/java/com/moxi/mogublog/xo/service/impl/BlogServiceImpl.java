@@ -146,13 +146,14 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
 
     @Override
     public List<Blog> setTagAndSortAndPictureByBlogList(List<Blog> list) {
-        final StringBuffer fileUids = new StringBuffer();
+
         List<String> sortUids = new ArrayList<>();
         List<String> tagUids = new ArrayList<>();
+        Set<String> fileUidSet = new HashSet<>();
 
         list.forEach(item -> {
             if (StringUtils.isNotEmpty(item.getFileUid())) {
-                fileUids.append(item.getFileUid() + ",");
+                fileUidSet.add(item.getFileUid());
             }
             if (StringUtils.isNotEmpty(item.getBlogSortUid())) {
                 sortUids.add(item.getBlogSortUid());
@@ -167,11 +168,32 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
                 }
             }
         });
+
         String pictureList = null;
-        if (fileUids != null) {
-            pictureList = this.pictureFeignClient.getPicture(fileUids.toString(), ",");
+        StringBuffer fileUids = new StringBuffer();
+        List<Map<String, Object>> picList = new ArrayList<>();
+        // feign分页查询图片数据
+        if(fileUidSet.size() > 0) {
+            int count = 1;
+            for(String fileUid: fileUidSet) {
+                fileUids.append(fileUid + ",");
+                System.out.println(count%10);
+                if(count%10 == 0) {
+                    pictureList = this.pictureFeignClient.getPicture(fileUids.toString(), ",");
+                    List<Map<String, Object>> tempPicList = webUtil.getPictureMap(pictureList);
+                    picList.addAll(tempPicList);
+                    fileUids = new StringBuffer();
+                }
+                count ++;
+            }
+            // 判断是否存在图片需要获取
+            if(fileUids.length() >= Constants.NUM_32) {
+                pictureList = this.pictureFeignClient.getPicture(fileUids.toString(), Constants.SYMBOL_COMMA);
+                List<Map<String, Object>> tempPicList = webUtil.getPictureMap(pictureList);
+                picList.addAll(tempPicList);
+            }
         }
-        List<Map<String, Object>> picList = webUtil.getPictureMap(pictureList);
+
         Collection<BlogSort> sortList = new ArrayList<>();
         Collection<Tag> tagList = new ArrayList<>();
         if (sortUids.size() > 0) {
@@ -685,7 +707,11 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         if (EOriginal.ORIGINAL.equals(blogVO.getIsOriginal())) {
             Admin admin = adminService.getById(request.getAttribute(SysConf.ADMIN_UID).toString());
             if (admin != null) {
-                blog.setAuthor(admin.getNickName());
+                if(StringUtils.isNotEmpty(admin.getNickName())) {
+                    blog.setAuthor(admin.getNickName());
+                } else {
+                    blog.setAuthor(admin.getUserName());
+                }
                 blog.setAdminUid(admin.getUid());
             }
             blog.setArticlesPart(projectName);
@@ -736,7 +762,11 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         Admin admin = adminService.getById(request.getAttribute(SysConf.ADMIN_UID).toString());
         blog.setAdminUid(admin.getUid());
         if (EOriginal.ORIGINAL.equals(blogVO.getIsOriginal())) {
-            blog.setAuthor(admin.getNickName());
+            if(StringUtils.isNotEmpty(admin.getNickName())) {
+                blog.setAuthor(admin.getNickName());
+            } else {
+                blog.setAuthor(admin.getUserName());
+            }
             String projectName = sysParamsService.getSysParamsValueByKey(SysConf.PROJECT_NAME_);
             blog.setArticlesPart(projectName);
         } else {
@@ -883,10 +913,13 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         }
 
         List<MultipartFile> fileList = new ArrayList<>();
+        List<String> fileNameList = new ArrayList<>();
         for (MultipartFile file : filedatas) {
-            String fileName = file.getOriginalFilename();
-            if (FileUtils.isMarkdown(fileName)) {
+            String fileOriginalName = file.getOriginalFilename();
+            if (FileUtils.isMarkdown(fileOriginalName)) {
                 fileList.add(file);
+                // 获取文件名
+                fileNameList.add(FileUtils.getFileName(fileOriginalName));
             } else {
                 return ResultUtil.errorWithMessage("目前仅支持Markdown文件");
             }
@@ -922,12 +955,15 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         Map<String, String> pictureMap = new HashMap<>();
         for (LinkedTreeMap<String, String> item : list) {
 
-            if (EOpenStatus.OPEN.equals(systemConfig.getPicturePriority())) {
+            if (EFilePriority.QI_NIU.equals(systemConfig.getPicturePriority())) {
                 // 获取七牛云上的图片
                 pictureMap.put(item.get(SysConf.FILE_OLD_NAME), item.get(SysConf.QI_NIU_URL));
-            } else {
+            } else if(EFilePriority.LOCAL.equals(systemConfig.getPicturePriority())) {
                 // 获取本地的图片
                 pictureMap.put(item.get(SysConf.FILE_OLD_NAME), item.get(SysConf.PIC_URL));
+            } else if(EFilePriority.MINIO.equals(systemConfig.getPicturePriority())) {
+                // 获取MINIO的图片
+                pictureMap.put(item.get(SysConf.FILE_OLD_NAME), item.get(SysConf.MINIO_URL));
             }
         }
         // 需要替换的图片Map
@@ -981,7 +1017,7 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         // 存储需要上传的博客
         List<Blog> blogList = new ArrayList<>();
         // 开始进行图片替换操作
-        Integer count = 1;
+        Integer count = 0;
         String projectName = sysParamsService.getSysParamsValueByKey(SysConf.PROJECT_NAME_);
         for (String content : fileContentList) {
             // 循环替换里面的图片
@@ -995,8 +1031,8 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
             blog.setAuthor(admin.getNickName());
             blog.setArticlesPart(projectName);
             blog.setLevel(ELevel.NORMAL);
-            blog.setTitle("默认标题" + count);
-            blog.setSummary("默认简介" + count);
+            blog.setTitle(fileNameList.get(count));
+            blog.setSummary(fileNameList.get(count));
             blog.setContent(content);
             blog.setFileUid(picture.getFileUid());
             blog.setIsOriginal(EOriginal.ORIGINAL);
@@ -1008,7 +1044,6 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         }
         // 批量添加博客
         blogService.saveBatch(blogList);
-
         return ResultUtil.successWithMessage(MessageConf.INSERT_SUCCESS);
     }
 
@@ -1575,6 +1610,7 @@ public class BlogServiceImpl extends SuperServiceImpl<BlogMapper, Blog> implemen
         //因为首页并不需要显示内容，所以需要排除掉内容字段
         queryWrapper.select(Blog.class, i -> !i.getProperty().equals(SQLConf.CONTENT));
         List<Blog> list = blogService.list(queryWrapper);
+
         //给博客增加标签、分类、图片
         list = blogService.setTagAndSortAndPictureByBlogList(list);
 

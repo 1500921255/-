@@ -42,12 +42,12 @@
           <img
             v-if="scope.row.user"
             :src="scope.row.user.photoUrl"
-            onerror="onerror=null;src='https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'"
+            onerror="onerror=null;src=defaultAvatar"
             style="width: 100px;height: 100px;"
           >
           <img
             v-else
-            src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+            :src="defaultAvatar"
             style="width: 100px;height: 100px;"
           >
         </template>
@@ -165,6 +165,7 @@ export default {
       commentTypeDictList: [], //评论类型字典
       commentSourceDictList: [], //评论来源字典
       commentTypeDefaultValue: null, // 评论类型默认值
+      defaultAvatar: this.$SysConf.defaultAvatar, // 默认头像
     };
   },
   created() {
@@ -283,12 +284,16 @@ export default {
       })
         .then(() => {
           deleteBatchComment(that.multipleSelection).then(response => {
-            this.$commonUtil.message(response.message)
+            if(response.code == that.$ECode.SUCCESS) {
+              that.$commonUtil.message.success(response.message)
+            } else {
+              that.$commonUtil.message.error(response.message)
+            }
             that.commentList();
           });
         })
         .catch(() => {
-          this.$commonUtil.info("已取消删除")
+          that.$commonUtil.info("已取消删除")
         });
     },
     handleCurrentChange: function(val) {

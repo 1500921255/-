@@ -15,7 +15,7 @@ def replace(file, newStr):
             ipList = re.findall(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b", line)
             if not ipList == []:
                 oldStr = ipList[0]
-               (print) file, "替换ip地址:", oldStr, "->", newStr
+                print file, "替换ip地址:", oldStr, "->", newStr
                 break
         # 替换ip地址
         for line in lines:

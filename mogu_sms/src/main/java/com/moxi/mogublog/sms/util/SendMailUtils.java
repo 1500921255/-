@@ -38,14 +38,15 @@ public class SendMailUtils {
             //multipart:true
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-            helper.setSubject("请我吃饭");
+            helper.setSubject("蘑菇博客");
 
-            helper.setText("您的评论已收到"+text, true);
+            helper.setText(text, true);
             //邮件接收人
             helper.setTo(receiver);
 
             //邮件发送者
             helper.setFrom(SENDER);
+
             mailSender.send(mimeMessage);
 
             log.info("邮件发送成功");

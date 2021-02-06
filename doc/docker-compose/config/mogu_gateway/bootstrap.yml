@@ -8,6 +8,9 @@ spring:
     allow-bean-definition-overriding: true
   cloud:
     nacos:
+      username: nacos
+      password: nacos
+
       discovery:
         server-addr: nacos:8848
         namespace: prod

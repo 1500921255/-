@@ -69,9 +69,10 @@ public class PictureServiceImpl extends SuperServiceImpl<PictureMapper, Picture>
         queryWrapper.orderByDesc(SQLConf.CREATE_TIME);
         IPage<Picture> pageList = pictureService.page(page, queryWrapper);
         List<Picture> pictureList = pageList.getRecords();
+
         final StringBuffer fileUids = new StringBuffer();
         pictureList.forEach(item -> {
-            if (StringUtils.isNotEmpty(item.getFileUid()    )) {
+            if (StringUtils.isNotEmpty(item.getFileUid())) {
                 fileUids.append(item.getFileUid() + SysConf.FILE_SEGMENTATION);
             }
         });
@@ -94,7 +95,6 @@ public class PictureServiceImpl extends SuperServiceImpl<PictureMapper, Picture>
             }
         }
         pageList.setRecords(pictureList);
-
         return pageList;
     }
 
