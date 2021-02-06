@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @RefreshScope
-@Component
+@Component("RabbitMqUtil")
 public class RabbitMqUtil {
 
     public static final String EXCHANGE_DIRECT = "exchange.direct";
