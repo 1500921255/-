@@ -31,10 +31,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-
         //得到请求头信息authorization信息
         String accessToken = request.getHeader("Authorization");
-
         if (accessToken != null) {
             //从Redis中获取内容
             String userInfo = stringRedisTemplate.opsForValue().get(RedisConf.USER_TOKEN + Constants.SYMBOL_COLON + accessToken);
