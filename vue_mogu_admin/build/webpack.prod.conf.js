@@ -40,7 +40,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
-      'process.env': `window._env_`
+      'process.env': 'window._env_'
     }),
     // extract css into its own file
     new MiniCssExtractPlugin({

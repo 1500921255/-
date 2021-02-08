@@ -40,3 +40,4 @@ copy .\conf\prod\mogu_spider\bootstrap.yml ..\..\mogu_spider\src\main\resources\
 echo ###### copy mogu_web ########
 copy .\conf\prod\mogu_web\application.yml ..\..\mogu_web\src\main\resources\
 copy .\conf\prod\mogu_web\bootstrap.yml ..\..\mogu_web\src\main\resources\
+Pause

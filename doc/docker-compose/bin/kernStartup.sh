@@ -44,6 +44,9 @@ docker-compose -f ../yaml/mogu_sms.yml up -d
 echo '=====开始运行mogu_web====='
 docker-compose -f ../yaml/mogu_web.yml up -d
 
+echo '=====开始运行mogu_web====='
+docker-compose -f ../yaml/mogu_spider.yml up -d
+
 echo '执行完成 日志目录: ./log'
 
 

@@ -10,20 +10,19 @@ spring:
     nacos:
       username: nacos
       password: nacos
+
       discovery:
-        server-addr: localhost:8848
-        namespace: dev
+        server-addr: nacos:8848
+        namespace: prod
       config:
-        server-addr: localhost:8848
+        server-addr: nacos:8848
         file-extension: yaml
         #指定分组
-        group: dev
+        group: prod
         #指定命名空间
-        namespace: dev
-
+        namespace: prod
     gateway:
       globalcors:
-        # gateway 跨域设置
         cors-configurations:
           '[/**]':
             allowedOrigins: "*"
@@ -68,12 +67,6 @@ spring:
           uri: lb://mogu-picture
           predicates:
             - Path=/mogu-picture/**
-          filters:
-            - StripPrefix=1
-        - id: mogu_spider
-          uri: lb://mogu-spider
-          predicates:
-            - Path=/mogu-spider/**
           filters:
             - StripPrefix=1
         - id: mogu_monitor
